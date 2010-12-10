@@ -1,8 +1,3 @@
-# PMS plugin framework
-from PMS import *
-from PMS.Objects import *
-from PMS.Shortcuts import *
-
 VIDEO_PREFIX = "/video/artep7"
 MUSIC_PREFIX = "/music/artep7"
 
@@ -28,17 +23,19 @@ def Start():
     MediaContainer.art = R(ART)
     MediaContainer.title1 = NAME
     DirectoryItem.thumb = R(ICON)
+    
+    HTTP.CacheTime = 3600
 
 def VideoMainMenu():
     dir = MediaContainer(viewGroup="List")
-    mainpage = XML.ElementFromURL(VIDEOS_PAGE % 'en',isHTML=True)
+    mainpage = HTML.ElementFromURL(VIDEOS_PAGE % 'en')
     for category in mainpage.xpath('//ul[@id="nav"]/li[not(@class="selected") and not(@class="lastItem")]/a'):  
       dir.Append(Function(DirectoryItem(CategoryParsing,category.text,thumb=R(ICON),art=R(ART)),path = category.get('href')))
     return dir
     
 def CategoryParsing(sender,path):
     dir = MediaContainer(viewGroup="List")
-    pagetoscrape = XML.ElementFromURL(BASE_ADDRESS + path,isHTML=True)
+    pagetoscrape = HTML.ElementFromURL(BASE_ADDRESS + path)
     for category in pagetoscrape.xpath("//div[@id='listChannel']/ul//a"):
       dir.Append(Function(DirectoryItem(SubCategoryParsing,category.text,thumb=R(ICON),art=R(ART)),path = category.get('href')))
     return dir
@@ -69,9 +66,15 @@ def GetVideos(sender,title,summary,path):
     dir = MediaContainer(viewGroup="List")
     xml = XML.ElementFromURL(path)
     thumb = xml.xpath('//firstThumbnailUrl')[0].text
-    for item in xml.xpath('//urls/url'):
-      localtitle = title + ' - ' + item.get('quality')
-      link = item.text
-      dir.Append(RTMPVideoItem(url=link,clip='',width = 640,height = 480, title = localtitle,summary = summary,thumb=thumb))
+    localtitle = title
+    link = xml.xpath('//video/url')[0].text
+    Log(link)
+    dir.Append(Function(VideoItem(PlayVideo, title = localtitle,summary = summary,thumb=thumb),path=link))
+    #for item in xml.xpath('//urls/url'):
+    #  localtitle = title + ' - ' + item.get('quality')
+    #  link = item.text#.split("MP4:")
+    #  dir.Append(RTMPVideoItem(link, clip = '',width = 640,height = 480, title = localtitle,summary = summary,thumb=thumb))
     return dir
-     
+ 
+def PlayVideo(sender, path):
+	return Redirect(WebVideoItem(path)) 
