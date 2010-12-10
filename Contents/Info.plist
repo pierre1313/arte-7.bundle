@@ -11,7 +11,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
     <key>PlexFrameworkVersion</key>
-    <string>1</string>
+    <string>2</string>
 	<key>CFBundlePackageType</key>
 	<string>AAPL</string>
 	<key>CFBundleSignature</key>
@@ -20,22 +20,18 @@
 	<string>1.0</string>
 	<key>PlexAudioCodec</key>
 	<array>
-		<string>WMAV2</string>
+		<string>MP3</string>
 	</array>
 	<key>PlexClientPlatforms</key>
 	<string>MacOSX</string>
 	<key>PlexMediaContainer</key>
 	<array>
-		<string>WMV</string>
+		<string>Flash</string>
 	</array>
 	<key>PlexPluginDebug</key>
 	<string>1</string>
 	<key>PlexPluginMode</key>
 	<string>AlwaysOn</string>
-	<key>PlexPluginPrefixes</key>
-	<array>
-		<string>/video/artep7</string>
-	</array>
 	<key>PlexVideoCodec</key>
 	<array>
 		<string>WMV3</string>
