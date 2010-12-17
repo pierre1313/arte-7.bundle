@@ -12,6 +12,8 @@ ART   = 'art-default.jpg'
 ICON  = 'icon-default.png'
 PREFS = 'icon-prefs.png'
 
+PREF_STRING = dict({"en":"Preferences","de":"Einstellungen","fr":"Préférences"})
+
 ####################################################################################################
 
 def Start():
@@ -26,19 +28,15 @@ def Start():
     DirectoryItem.thumb = R(ICON)
 
     HTTP.CacheTime = 3600
+    
 
 def VideoMainMenu():
-    dir = MediaContainer(viewGroup="List")
+    dir = MediaContainer(viewGroup="List",noCache=True)
     mainpage = HTML.ElementFromURL(VIDEOS_PAGE % Prefs['lang'])
     for category in mainpage.xpath('//ul[@id="nav"]/li[not(@class="selected") and not(@class="lastItem")]/a'):  
       dir.Append(Function(DirectoryItem(CategoryParsing,category.text,thumb=R(ICON),art=R(ART)),path = category.get('href')))
 
-    if Prefs['lang'] == 'de':
-      dir.Append(PrefsItem(title="Einstellungen",subtile="",summary="Einstellungen",thumb=R(PREFS)))
-    elif Prefs['lang'] == 'fr':
-   	  dir.Append(PrefsItem(title="Préferences",subtile="",summary="Préferences",thumb=R(PREFS)))
-    else:
-  	  dir.Append(PrefsItem(title="Preferences",subtile="",summary="Preferences",thumb=R(PREFS)))
+    dir.Append(PrefsItem(title=PREF_STRING[Prefs['lang']],subtile="",summary=PREF_STRING[Prefs['lang']],thumb=R(PREFS)))
 
     return dir
 
@@ -79,6 +77,8 @@ def GetAllVideos(sender,title,summary,videoid):
         dir.Append(Function(VideoItem(PlayVideo, title = localtitle, summary = summary, subtitle = subtitle, thumb=thumb),path=path))
 #AND USE THIS      
 #      dir.Append(Function(DirectoryItem(GetVideos,title = localtitle,summary = summary,thumb=R(ICON),art=R(ART)),title = localtitle,summary = summary,path = link))
+    if len(dir) == 0:
+      dir = MessageContainer("Error","No video available in this language")
     return dir    
 
 # TO WORK WITH DIRECT LINKS UNCOMMENT THIS SECTION TOEXPOSE A SUBMENU FOR DIFFERENT QUALITY STREAMS
