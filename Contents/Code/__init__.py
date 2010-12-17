@@ -1,5 +1,5 @@
 VIDEO_PREFIX = "/video/artep7"
-MUSIC_PREFIX = "/music/artep7"
+#MUSIC_PREFIX = "/music/artep7"
 
 VIDEOS_PAGE = 'http://videos.arte.tv/%s/videos'
 BASE_ADDRESS = 'http://videos.arte.tv'
@@ -16,7 +16,7 @@ PREFS = 'icon-prefs.png'
 
 def Start():
 
-    Plugin.AddPrefixHandler(VIDEO_PREFIX, VideoMainMenu, 'Arte+7', ICON, ART)
+    Plugin.AddPrefixHandler(VIDEO_PREFIX, VideoMainMenu, NAME, ICON, ART)
 
     Plugin.AddViewGroup("InfoList", viewMode="InfoList", mediaType="items")
     Plugin.AddViewGroup("List", viewMode="List", mediaType="items")
@@ -24,7 +24,7 @@ def Start():
     MediaContainer.art = R(ART)
     MediaContainer.title1 = NAME
     DirectoryItem.thumb = R(ICON)
-    
+
     HTTP.CacheTime = 3600
 
 def VideoMainMenu():
@@ -41,7 +41,7 @@ def VideoMainMenu():
   	  dir.Append(PrefsItem(title="Preferences",subtile="",summary="Preferences",thumb=R(PREFS)))
 
     return dir
-    
+
 def CategoryParsing(sender,path):
     dir = MediaContainer(viewGroup="List")
     pagetoscrape = HTML.ElementFromURL(BASE_ADDRESS + path)
@@ -61,7 +61,7 @@ def SubCategoryParsing(sender,path):
       videoid = link[link.rfind("/")+1:link.find(".html")]
       dir.Append(Function(DirectoryItem(GetAllVideos,title = title,summary = summary,thumb=R(ICON),art=R(ART)),title = title,summary = summary,videoid = videoid))
     return dir
-    
+
 def GetAllVideos(sender,title,summary,videoid):
     dir = MediaContainer(viewGroup="InfoList")
     xml = XML.ElementFromURL(VIDEO_PAGE  % (Prefs['lang'],videoid))
@@ -80,7 +80,7 @@ def GetAllVideos(sender,title,summary,videoid):
 #AND USE THIS      
 #      dir.Append(Function(DirectoryItem(GetVideos,title = localtitle,summary = summary,thumb=R(ICON),art=R(ART)),title = localtitle,summary = summary,path = link))
     return dir    
-    
+
 # TO WORK WITH DIRECT LINKS UNCOMMENT THIS SECTION TOEXPOSE A SUBMENU FOR DIFFERENT QUALITY STREAMS
 #def GetVideos(sender,title,summary,path):
 #    dir = MediaContainer(viewGroup="List")
@@ -96,6 +96,6 @@ def GetAllVideos(sender,title,summary,videoid):
     #  link = item.text#.split("MP4:")
     #  dir.Append(RTMPVideoItem(link, clip = '',width = 640,height = 480, title = localtitle,summary = summary,thumb=thumb))
 #    return dir
- 
+
 def PlayVideo(sender, path):
 	return Redirect(WebVideoItem(path)) 

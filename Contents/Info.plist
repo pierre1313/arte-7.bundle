@@ -20,13 +20,13 @@
 	<string>1.0</string>
 	<key>PlexClientPlatforms</key>
 	<string>MacOSX</string>
+	<key>PlexPluginMode</key>
+	<string>AlwaysOn</string>
 	<key>PlexMediaContainer</key>
 	<array>
 		<string>Flash</string>
 	</array>
 	<key>PlexPluginDebug</key>
 	<string>1</string>
-	<key>PlexPluginMode</key>
-	<string>AlwaysOn</string>
 </dict>
 </plist>
