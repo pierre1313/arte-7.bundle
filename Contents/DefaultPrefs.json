@@ -1,0 +1,9 @@
+[
+  {
+    "id":"lang",
+    "type":"enum",
+    "label":"Language - Langue - Sprache",
+    "values":["en", "fr", "de"],
+    "default":"en"
+  }
+]

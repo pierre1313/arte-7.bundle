@@ -4,12 +4,13 @@ MUSIC_PREFIX = "/music/artep7"
 VIDEOS_PAGE = 'http://videos.arte.tv/%s/videos'
 BASE_ADDRESS = 'http://videos.arte.tv'
 SUBCATEGORY = 'http://videos.arte.tv%s,view,rss.xml'
-VIDEO_PAGE = 'http://videos.arte.tv/fr/do_delegate/videos/%s,view,asPlayerXml.xml'
+VIDEO_PAGE = 'http://videos.arte.tv/%s/do_delegate/videos/%s,view,asPlayerXml.xml'
 
 NAME = 'Arte+7'
 
-ART           = 'art-default.png'
-ICON          = 'icon-default.png'
+ART   = 'art-default.jpg'
+ICON  = 'icon-default.png'
+PREFS = 'icon-prefs.png'
 
 ####################################################################################################
 
@@ -28,9 +29,17 @@ def Start():
 
 def VideoMainMenu():
     dir = MediaContainer(viewGroup="List")
-    mainpage = HTML.ElementFromURL(VIDEOS_PAGE % 'en')
+    mainpage = HTML.ElementFromURL(VIDEOS_PAGE % Prefs['lang'])
     for category in mainpage.xpath('//ul[@id="nav"]/li[not(@class="selected") and not(@class="lastItem")]/a'):  
       dir.Append(Function(DirectoryItem(CategoryParsing,category.text,thumb=R(ICON),art=R(ART)),path = category.get('href')))
+
+    if Prefs['lang'] == 'de':
+      dir.Append(PrefsItem(title="Einstellungen",subtile="",summary="Einstellungen",thumb=R(PREFS)))
+    elif Prefs['lang'] == 'fr':
+   	  dir.Append(PrefsItem(title="Préferences",subtile="",summary="Préferences",thumb=R(PREFS)))
+    else:
+  	  dir.Append(PrefsItem(title="Preferences",subtile="",summary="Preferences",thumb=R(PREFS)))
+
     return dir
     
 def CategoryParsing(sender,path):
@@ -54,27 +63,39 @@ def SubCategoryParsing(sender,path):
     return dir
     
 def GetAllVideos(sender,title,summary,videoid):
-    dir = MediaContainer(viewGroup="List")
-    xml = XML.ElementFromURL(VIDEO_PAGE  % videoid)
+    dir = MediaContainer(viewGroup="InfoList")
+    xml = XML.ElementFromURL(VIDEO_PAGE  % (Prefs['lang'],videoid))
     for item in xml.xpath('//videos/video'):
-      localtitle = title + ' - ' + item.get('lang')
-      link = item.get("ref")
-      dir.Append(Function(DirectoryItem(GetVideos,title = localtitle,summary = summary,thumb=R(ICON),art=R(ART)),title = localtitle,summary = summary,path = link))
+      if item.get('lang') == Prefs['lang']:
+        localtitle = title# + ' - ' + item.get('lang')
+        link = item.get("ref")
+# TO WORK WITH DIRECT LINKS REMOVE THIS SECTION   
+        xml = XML.ElementFromURL(link)
+        thumb = xml.xpath('//firstThumbnailUrl')[0].text
+        path = xml.xpath('//video/url')[0].text
+        summary = HTML.ElementFromURL(path).xpath("//div[@class='recentTracksCont']/div/p")[0].text
+        subtitle = xml.xpath("//dateVideo")[0].text
+        subtitle = subtitle[:subtitle.find('+')-1]
+        dir.Append(Function(VideoItem(PlayVideo, title = localtitle, summary = summary, subtitle = subtitle, thumb=thumb),path=path))
+#AND USE THIS      
+#      dir.Append(Function(DirectoryItem(GetVideos,title = localtitle,summary = summary,thumb=R(ICON),art=R(ART)),title = localtitle,summary = summary,path = link))
     return dir    
     
-def GetVideos(sender,title,summary,path):
-    dir = MediaContainer(viewGroup="List")
-    xml = XML.ElementFromURL(path)
-    thumb = xml.xpath('//firstThumbnailUrl')[0].text
-    localtitle = title
-    link = xml.xpath('//video/url')[0].text
-    Log(link)
-    dir.Append(Function(VideoItem(PlayVideo, title = localtitle,summary = summary,thumb=thumb),path=link))
+# TO WORK WITH DIRECT LINKS UNCOMMENT THIS SECTION TOEXPOSE A SUBMENU FOR DIFFERENT QUALITY STREAMS
+#def GetVideos(sender,title,summary,path):
+#    dir = MediaContainer(viewGroup="List")
+#    xml = XML.ElementFromURL(path)
+#    thumb = xml.xpath('//firstThumbnailUrl')[0].text
+#    localtitle = title
+#    link = xml.xpath('//video/url')[0].text
+#    summary = HTML.ElementFromURL(link).xpath("//div[@class='recentTracksCont']/div/p")[0].text
+#    subtitle = xml.xpath("//dateVideo")[0].text
+#    dir.Append(Function(VideoItem(PlayVideo, title = localtitle, summary = summary, subtitle = subtitle, thumb=thumb),path=link))
     #for item in xml.xpath('//urls/url'):
     #  localtitle = title + ' - ' + item.get('quality')
     #  link = item.text#.split("MP4:")
     #  dir.Append(RTMPVideoItem(link, clip = '',width = 640,height = 480, title = localtitle,summary = summary,thumb=thumb))
-    return dir
+#    return dir
  
 def PlayVideo(sender, path):
 	return Redirect(WebVideoItem(path)) 
