@@ -1,5 +1,5 @@
 VIDEO_PREFIX = "/video/artep7"
-MUSIC_PREFIX = "/music/artep7"
+#MUSIC_PREFIX = "/music/artep7"
 
 VIDEOS_PAGE = 'http://videos.arte.tv/%s/videos'
 BASE_ADDRESS = 'http://videos.arte.tv'
@@ -18,7 +18,7 @@ PREF_STRING = dict({"en":"Preferences","de":"Einstellungen","fr":"Préférences"
 
 def Start():
 
-    Plugin.AddPrefixHandler(VIDEO_PREFIX, VideoMainMenu, 'Arte+7', ICON, ART)
+    Plugin.AddPrefixHandler(VIDEO_PREFIX, VideoMainMenu, NAME, ICON, ART)
 
     Plugin.AddViewGroup("InfoList", viewMode="InfoList", mediaType="items")
     Plugin.AddViewGroup("List", viewMode="List", mediaType="items")
@@ -26,9 +26,8 @@ def Start():
     MediaContainer.art = R(ART)
     MediaContainer.title1 = NAME
     DirectoryItem.thumb = R(ICON)
-    
+
     HTTP.CacheTime = 3600
-    
 
 def VideoMainMenu():
     dir = MediaContainer(viewGroup="List",noCache=True)
@@ -36,10 +35,10 @@ def VideoMainMenu():
     for category in mainpage.xpath('//ul[@id="nav"]/li[not(@class="selected") and not(@class="lastItem")]/a'):  
       dir.Append(Function(DirectoryItem(CategoryParsing,category.text,thumb=R(ICON),art=R(ART)),path = category.get('href')))
 
-    dir.Append(PrefsItem(title=PREF_STRING[Prefs['lang']],subtile="",summary=PREF_STRING[Prefs['lang']],thumb=R(PREFS)))
+    dir.Append(PrefsItem(title=PREF_STRING[Prefs['lang']],subtile="",summary="",thumb=R(PREFS)))
 
     return dir
-    
+
 def CategoryParsing(sender,path):
     dir = MediaContainer(viewGroup="List")
     pagetoscrape = HTML.ElementFromURL(BASE_ADDRESS + path)
@@ -59,7 +58,7 @@ def SubCategoryParsing(sender,path):
       videoid = link[link.rfind("/")+1:link.find(".html")]
       dir.Append(Function(DirectoryItem(GetAllVideos,title = title,summary = summary,thumb=R(ICON),art=R(ART)),title = title,summary = summary,videoid = videoid))
     return dir
-    
+
 def GetAllVideos(sender,title,summary,videoid):
     dir = MediaContainer(viewGroup="InfoList")
     xml = XML.ElementFromURL(VIDEO_PAGE  % (Prefs['lang'],videoid))
@@ -80,7 +79,7 @@ def GetAllVideos(sender,title,summary,videoid):
     if len(dir) == 0:
       dir = MessageContainer("Error","No video available in this language")
     return dir    
-    
+
 # TO WORK WITH DIRECT LINKS UNCOMMENT THIS SECTION TOEXPOSE A SUBMENU FOR DIFFERENT QUALITY STREAMS
 #def GetVideos(sender,title,summary,path):
 #    dir = MediaContainer(viewGroup="List")
@@ -96,6 +95,6 @@ def GetAllVideos(sender,title,summary,videoid):
     #  link = item.text#.split("MP4:")
     #  dir.Append(RTMPVideoItem(link, clip = '',width = 640,height = 480, title = localtitle,summary = summary,thumb=thumb))
 #    return dir
- 
+
 def PlayVideo(sender, path):
 	return Redirect(WebVideoItem(path)) 
