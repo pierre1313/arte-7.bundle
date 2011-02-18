@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<site site="http://videos.arte.tv*"
-	plugin="http://videos.arte.tv/blob/web/i18n/view/player_.*\.swf*"
+<site site="http://videos.arte.tv"
+	plugin="http://videos.arte.tv/blob/web/i18n/view/player_.*\.swf"
 	initialState="playing"
 	version="1.0">
 
