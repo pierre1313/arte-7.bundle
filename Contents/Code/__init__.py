@@ -28,7 +28,6 @@ def Start():
     DirectoryItem.thumb = R(ICON)
 
     HTTP.CacheTime = 3600
-    
 
 def VideoMainMenu():
     dir = MediaContainer(viewGroup="List",noCache=True)
@@ -36,7 +35,7 @@ def VideoMainMenu():
     for category in mainpage.xpath('//ul[@id="nav"]/li[not(@class="selected") and not(@class="lastItem")]/a'):  
       dir.Append(Function(DirectoryItem(CategoryParsing,category.text,thumb=R(ICON),art=R(ART)),path = category.get('href')))
 
-    dir.Append(PrefsItem(title=PREF_STRING[Prefs['lang']],subtile="",summary=PREF_STRING[Prefs['lang']],thumb=R(PREFS)))
+    dir.Append(PrefsItem(title=PREF_STRING[Prefs['lang']],subtile="",summary="",thumb=R(PREFS)))
 
     return dir
 
