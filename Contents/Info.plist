@@ -26,7 +26,5 @@
 	<array>
 		<string>Flash</string>
 	</array>
-	<key>PlexPluginDebug</key>
-	<string>1</string>
 </dict>
 </plist>
