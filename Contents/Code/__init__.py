@@ -43,7 +43,13 @@ def CategoryParsing(sender,path):
     dir = MediaContainer(viewGroup="List")
     pagetoscrape = HTML.ElementFromURL(BASE_ADDRESS + path)
     for category in pagetoscrape.xpath("//div[@id='listChannel']/ul//a"):
-      dir.Append(Function(DirectoryItem(SubCategoryParsing,category.text,thumb=R(ICON),art=R(ART)),path = category.get('href')))
+      link = category.get('href')
+      if '.html' in link:
+        path = link
+      else:
+        path = link + '/id-' +category.xpath('span')[0].get('id')
+      Log(path)
+      dir.Append(Function(DirectoryItem(SubCategoryParsing,category.text,thumb=R(ICON),art=R(ART)),path = path))
     return dir
 
 
